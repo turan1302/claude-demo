@@ -183,54 +183,75 @@ dönüyorsa cron'un kendiliğinden kuyruğu işlediği kanıtlanmış olur.
 
 ## 6) Frontend (Next.js)
 
-**Web Siteleri → Site ekle → Web uygulamasını dağıtın (Node.js)**:
+Frontend, hPanel'de GitHub'a bağlı bir **Node.js Web Uygulaması** olarak
+çalışır ve **`frontend-build`** branch'ini takip eder. Sunucuda
+`next build` çalışamadığı için (aşağıya bakın) build GitHub Actions'ta
+yapılır.
 
-1. **Public repository URL**: `https://github.com/<kullanici>/<repo>` (backend'de
-   olduğu gibi public repo).
-2. Sonraki ekranda **"Kök dizin"**i **`frontend`** olarak değiştirin (repo
-   köküne değil, monorepo'nun frontend alt klasörüne kurulur). Framework
-   ön ayarında Next.js seçeneği yoksa "Express" seçilebilir — sonucu
-   etkilemiyor, gerçek ayarları biz elle veriyoruz.
-3. **"Derleme ve çıktı ayarları"**: Paket yöneticisi `npm`, **Giriş
-   dosyası: `server.js`** (bu repo'daki `frontend/server.js`, tam da bu
-   amaçla — Passenger/LiteSpeed tarzı Node App yöneticilerinin beklediği
-   tek-dosya giriş noktası — hazırlanmış durumda).
-4. **Ortam değişkenleri**: `LARAVEL_API_URL=https://api.siteniz.com/api`,
-   `LARAVEL_BASE_URL=https://api.siteniz.com`. `NEXT_PUBLIC_REVERB_*`
-   değişkenlerini **eklemeyin** (polling fallback'in devreye girmesi için).
-5. **"Dağıt"**.
+### Deploy akışı (otomatik)
 
-### Otomatik deploy: GitHub Actions + `frontend-build` branch'i
+`main`'e `frontend/` altında bir değişiklik push edilir →
+`.github/workflows/frontend-build.yml` `npm run build` çalıştırır (~2-3 dk)
+ve derlenmiş `.next` klasörünü kaynak kodla birlikte (`node_modules`,
+`.next/cache` hariç) `frontend-build` branch'ine tek commit olarak
+force-push eder → Hostinger'ın GitHub bağlantısı bu push'u görüp
+**otomatik dağıtır** (`npm install` + `server.js` ile yeniden başlatma).
+Ayrı bir webhook eklemek gerekmez; ek secret da gerekmez (`GITHUB_TOKEN`
+yeterli). Build durumu GitHub → **Actions** sekmesindedir; gerekirse
+**Run workflow** ile elle tetiklenir.
 
-Sunucuda build yapılamadığı için (aşağıya bakın) build GitHub'da yapılır:
-`.github/workflows/frontend-build.yml`, `main`'e `frontend/` altında bir
-değişiklik push edildiğinde `npm run build` çalıştırır ve derlenmiş
-`.next` klasörünü kaynak kodla birlikte (`node_modules`, `.next/cache`
-hariç) **`frontend-build`** branch'ine tek commit olarak force-push eder.
-Bu branch'te de dosyalar `frontend/` klasörü altındadır, yani "Kök
-dizin" ayarı değişmez. Ek bir secret gerekmez (`GITHUB_TOKEN` yeterli).
+> ⚠️ Uygulama `main`'i takip edecek şekilde bırakılırsa her push'ta
+> build'siz (`.next` klasörü olmayan) bir sürüm dağıtılır ve site 503
+> verir. Branch mutlaka `frontend-build` olmalı.
 
-hPanel'de tek seferlik ayar:
+### İlk kurulum / ayarları değiştirme
 
-1. Node.js App'in ayarlarında **branch**'i `main` yerine
-   **`frontend-build`** yapın (kök dizin `frontend`, giriş dosyası
-   `server.js` aynı kalır).
-2. Uygulamanın **otomatik dağıtım / webhook** seçeneğini açın; bir
-   webhook URL'i veriyorsa backend'deki gibi GitHub'da **repo → Settings →
-   Webhooks**'a ekleyin.
+**Web Siteleri → (frontend sitesi) → Kontrol Paneli → "Yeniden Dağıt"ın
+yanındaki ⋮ → Depoyu değiştir** (ilk kurulumda: **Site ekle → Web
+uygulamasını dağıtın (Node.js)**, GitHub ile bağlanın):
 
-Artık akış şu: `main`'e push → Actions build alır (~2-3 dk) →
-`frontend-build` güncellenir → webhook Hostinger'ı tetikler → Hostinger
-`npm install` yapıp uygulamayı hazır `.next` ile yeniden başlatır.
-Build'in durumunu GitHub'da **Actions** sekmesinden, gerekirse
-**Run workflow** ile elle tetikleyebilirsiniz. (`frontend-build`'e yapılan
-push backend'in webhook'unu da tetikler; o deploy `main`'i takip ettiği
-için değişiklik olmadan geçer.)
+| Ayar | Değer |
+|---|---|
+| Depo | `claude-demo` |
+| Framework ön ayarı | `Express` (Next.js seçeneği yok; sonucu etkilemiyor) |
+| Dal | **`frontend-build`** |
+| Düğüm sürümü | `22.x` |
+| Kök dizin | `frontend` |
+| Derleme ve çıktı ayarları | Paket yöneticisi `npm`, giriş dosyası **`server.js`** (derleme komutu alanı yok — olmamalı) |
+| Ortam değişkenleri | Aşağıdaki tablo |
 
-Aşağıdaki elle `rsync` yöntemi, Actions'ın çalışmadığı durumlar için
-yedek olarak geçerliliğini koruyor.
+`frontend/server.js`, Passenger/LiteSpeed tarzı Node App yöneticilerinin
+beklediği tek dosyalık giriş noktası olarak hazırlanmıştır.
 
-### Neden sunucuda build yapılmıyor? (elle yöntem)
+### Ortam değişkenleri
+
+| Değişken | Zorunlu mu | Örnek | Not |
+|---|---|---|---|
+| `LARAVEL_API_URL` | **Evet** | `https://api.siteniz.com/api` | `http(s)://` ile başlamalı, **`/api` ile bitmeli** (sondaki `/` sorun değil) |
+| `LARAVEL_BASE_URL` | Hayır | `https://api.siteniz.com` | Verilmezse `LARAVEL_API_URL`'den `/api` çıkarılarak türetilir |
+| `NEXT_PUBLIC_REVERB_*` | — | — | **Eklemeyin**: tanımsız olunca frontend WebSocket yerine polling kullanır |
+
+- Normal deploy'lar (push → otomatik dağıtım) bu değerlere **dokunmaz**.
+- ⚠️ **"Depoyu değiştir" sihirbazı ortam değişkenlerini sıfırlar** (son
+  ekranda "Ortam değişkenleri: Hiçbiri" görünür). Bu ekranı her
+  kullandığınızda **Dağıt'a basmadan önce** değişkenleri yeniden ekleyin.
+- Değerler yalnızca sunucu tarafında (`frontend/src/lib/server-env.ts`)
+  okunur ve doğrulanır; eksik ya da hatalı bir değer, ne yapılması
+  gerektiğini söyleyen bir hata üretir.
+
+### Kontrol: `/api/health`
+
+Her dağıtımdan sonra `https://<frontend-adresi>/api/health` adresini açın.
+Her şey doğruysa:
+
+```json
+{ "ok": true, "config": { "LARAVEL_API_URL": "tanımlı", "LARAVEL_BASE_URL": "tanımsız — LARAVEL_API_URL'den türetiliyor" }, "backend": "erişilebilir" }
+```
+
+`ok: false` ise (HTTP 503) `config` ve `backend` alanları neyin eksik ya da
+yanlış olduğunu söyler; değişkenlerin değerlerini göstermez.
+
+### Neden sunucuda build yapılmıyor? (yedek elle yöntem)
 
 **Kritik nokta — build adımı otomatik ÇALIŞMIYOR.** Hostinger'ın Node.js
 App aracı yalnızca `npm install` yapıyor, `npm run build`'i (Next.js'in

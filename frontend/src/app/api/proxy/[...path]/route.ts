@@ -1,8 +1,7 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { AUTH_COOKIE_NAME } from "@/lib/auth-cookie";
-
-const LARAVEL_API_URL = process.env.LARAVEL_API_URL;
+import { laravelFetch } from "@/lib/server-env";
 
 async function proxy(request: NextRequest, path: string[]) {
   const cookieStore = await cookies();
@@ -12,12 +11,10 @@ async function proxy(request: NextRequest, path: string[]) {
     return NextResponse.json({ message: "Unauthenticated." }, { status: 401 });
   }
 
-  const targetUrl = `${LARAVEL_API_URL}/${path.join("/")}${request.nextUrl.search}`;
-
   const hasBody = !["GET", "HEAD", "DELETE"].includes(request.method);
   const body = hasBody ? await request.text() : undefined;
 
-  const laravelResponse = await fetch(targetUrl, {
+  const laravelResponse = await laravelFetch(`/${path.join("/")}${request.nextUrl.search}`, {
     method: request.method,
     headers: {
       Accept: "application/json",

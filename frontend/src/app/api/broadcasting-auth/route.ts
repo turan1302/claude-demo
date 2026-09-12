@@ -1,8 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { AUTH_COOKIE_NAME } from "@/lib/auth-cookie";
-
-const LARAVEL_BASE_URL = process.env.LARAVEL_BASE_URL;
+import { laravelBaseUrl, laravelFetch } from "@/lib/server-env";
 
 /**
  * Laravel Echo private kanal doğrulaması için köprü. Echo tarayıcıda
@@ -20,15 +19,19 @@ export async function POST(request: Request) {
 
   const body = await request.text();
 
-  const laravelResponse = await fetch(`${LARAVEL_BASE_URL}/broadcasting/auth`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
+  const laravelResponse = await laravelFetch(
+    "/broadcasting/auth",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body,
     },
-    body,
-  });
+    laravelBaseUrl
+  );
 
   const data = await laravelResponse.text();
 

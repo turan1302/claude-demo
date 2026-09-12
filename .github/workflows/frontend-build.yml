@@ -1,0 +1,70 @@
+# Hostinger'daki paylaşımlı hesapta `next build` thread kotası yüzünden
+# çalışamıyor (bkz. deploy/HOSTINGER.md). Bu yüzden build burada yapılır ve
+# derlenmiş çıktı `frontend-build` branch'ine gönderilir; Hostinger'ın
+# Node.js App'i bu branch'i takip eder, push webhook'u ile yalnızca
+# `npm install` + başlatma yapar.
+name: Frontend build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: frontend-build
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Bağımlılıkları kur
+        working-directory: frontend
+        run: npm ci
+
+      # NEXT_PUBLIC_REVERB_* bilerek verilmiyor: prod'da frontend WebSocket
+      # yerine polling kullanmalı. LARAVEL_* değişkenleri çalışma zamanında
+      # okunduğu için Hostinger panelinden verilir.
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+      - name: Deploy paketini hazırla
+        run: |
+          mkdir -p dist
+          rsync -a \
+            --exclude node_modules \
+            --exclude .gitignore \
+            --exclude '.env*' \
+            --exclude .next/cache \
+            --exclude .next/dev \
+            --exclude .next/diagnostics \
+            --exclude .next/trace \
+            --exclude .next/trace-build \
+            frontend/ dist/frontend/
+
+      - name: frontend-build branch'ine gönder
+        working-directory: dist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git init -q -b frontend-build
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Frontend build: ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" frontend-build

@@ -200,6 +200,38 @@ dönüyorsa cron'un kendiliğinden kuyruğu işlediği kanıtlanmış olur.
    değişkenlerini **eklemeyin** (polling fallback'in devreye girmesi için).
 5. **"Dağıt"**.
 
+### Otomatik deploy: GitHub Actions + `frontend-build` branch'i
+
+Sunucuda build yapılamadığı için (aşağıya bakın) build GitHub'da yapılır:
+`.github/workflows/frontend-build.yml`, `main`'e `frontend/` altında bir
+değişiklik push edildiğinde `npm run build` çalıştırır ve derlenmiş
+`.next` klasörünü kaynak kodla birlikte (`node_modules`, `.next/cache`
+hariç) **`frontend-build`** branch'ine tek commit olarak force-push eder.
+Bu branch'te de dosyalar `frontend/` klasörü altındadır, yani "Kök
+dizin" ayarı değişmez. Ek bir secret gerekmez (`GITHUB_TOKEN` yeterli).
+
+hPanel'de tek seferlik ayar:
+
+1. Node.js App'in ayarlarında **branch**'i `main` yerine
+   **`frontend-build`** yapın (kök dizin `frontend`, giriş dosyası
+   `server.js` aynı kalır).
+2. Uygulamanın **otomatik dağıtım / webhook** seçeneğini açın; bir
+   webhook URL'i veriyorsa backend'deki gibi GitHub'da **repo → Settings →
+   Webhooks**'a ekleyin.
+
+Artık akış şu: `main`'e push → Actions build alır (~2-3 dk) →
+`frontend-build` güncellenir → webhook Hostinger'ı tetikler → Hostinger
+`npm install` yapıp uygulamayı hazır `.next` ile yeniden başlatır.
+Build'in durumunu GitHub'da **Actions** sekmesinden, gerekirse
+**Run workflow** ile elle tetikleyebilirsiniz. (`frontend-build`'e yapılan
+push backend'in webhook'unu da tetikler; o deploy `main`'i takip ettiği
+için değişiklik olmadan geçer.)
+
+Aşağıdaki elle `rsync` yöntemi, Actions'ın çalışmadığı durumlar için
+yedek olarak geçerliliğini koruyor.
+
+### Neden sunucuda build yapılmıyor? (elle yöntem)
+
 **Kritik nokta — build adımı otomatik ÇALIŞMIYOR.** Hostinger'ın Node.js
 App aracı yalnızca `npm install` yapıyor, `npm run build`'i (Next.js'in
 derleme adımı) KENDİSİ çalıştırmıyor — `server.js` `.next` klasörünü

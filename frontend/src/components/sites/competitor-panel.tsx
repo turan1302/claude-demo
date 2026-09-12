@@ -82,20 +82,23 @@ export function CompetitorPanel({ siteId }: { siteId: number }) {
             Rakip Ekle
           </Button>
         ) : (
-          <span className="text-[11.5px] text-ink-tertiary">En fazla {MAX_COMPETITORS} rakip eklenebilir</span>
+          <span className="text-right text-[11.5px] text-ink-tertiary">En fazla {MAX_COMPETITORS} rakip eklenebilir</span>
         )}
       </CardHeader>
 
       {showForm ? (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex items-start gap-2 border-b border-border px-5 py-3.5">
-          <div className="flex-1">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-2 border-b border-border px-4 py-3.5 sm:flex-row sm:items-start sm:px-5"
+        >
+          <div className="min-w-0 sm:flex-1">
             <Input placeholder="https://rakip-domain.com" {...register("url")} />
             <FieldError>{errors.url?.message}</FieldError>
           </div>
-          <div className="w-48">
+          <div className="w-full sm:w-48">
             <Input placeholder="Görünen ad (opsiyonel)" {...register("name")} />
           </div>
-          <Button type="submit" size="sm" disabled={createCompetitor.isPending}>
+          <Button type="submit" size="sm" disabled={createCompetitor.isPending} className="h-9">
             {createCompetitor.isPending ? "Ekleniyor…" : "Ekle"}
           </Button>
         </form>
@@ -104,9 +107,10 @@ export function CompetitorPanel({ siteId }: { siteId: number }) {
       <StaggerList>
         {rows.map(({ site, keyword_count, backlink_count }) => {
           const isPrimary = site.id === comparison.primary.site.id;
+          const backlinkLabel = backlink_count === null ? "Backlink: yakında" : backlink_count;
           return (
             <StaggerItem key={site.id}>
-              <div className="flex items-center gap-4 border-t border-border px-5 py-3 first:border-t-0">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border px-4 py-3 first:border-t-0 sm:px-5">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="truncate text-[13px] font-semibold">{site.name ?? site.url}</span>
@@ -117,25 +121,30 @@ export function CompetitorPanel({ siteId }: { siteId: number }) {
                     ) : null}
                   </div>
                   <div className="truncate text-[12px] text-ink-tertiary">{site.url}</div>
+                  {/* Telefonda kelime/backlink sütunları yerine tek satır özet. */}
+                  <div className="mt-0.5 text-[11.5px] text-ink-tertiary sm:hidden">
+                    {keyword_count} kelime · {backlinkLabel}
+                  </div>
                 </div>
 
-                {site.latest_analysis?.status === "completed" ? (
-                  <div className="flex shrink-0 gap-2">
-                    <ScoreChip label="SEO" score={site.latest_analysis.overall_seo_score} />
-                    <ScoreChip label="GEO" score={site.latest_analysis.overall_geo_score} />
-                  </div>
-                ) : site.latest_analysis?.status === "failed" ? (
-                  <span className="shrink-0 text-[12px] text-bad">Analiz başarısız oldu</span>
-                ) : (
-                  <span className="shrink-0 text-[12px] text-ink-tertiary">Analiz bekliyor</span>
-                )}
+                {/* Telefonda skorlar sil butonunun altındaki ikinci satıra iner. */}
+                <div className="order-last flex w-full items-center gap-2 sm:order-none sm:w-auto">
+                  {site.latest_analysis?.status === "completed" ? (
+                    <>
+                      <ScoreChip label="SEO" score={site.latest_analysis.overall_seo_score} />
+                      <ScoreChip label="GEO" score={site.latest_analysis.overall_geo_score} />
+                    </>
+                  ) : site.latest_analysis?.status === "failed" ? (
+                    <span className="text-[12px] text-bad">Analiz başarısız oldu</span>
+                  ) : (
+                    <span className="text-[12px] text-ink-tertiary">Analiz bekliyor</span>
+                  )}
+                </div>
 
-                <div className="w-24 shrink-0 text-right text-[12.5px] tabular-nums text-ink-secondary">
+                <div className="hidden w-24 shrink-0 text-right text-[12.5px] tabular-nums text-ink-secondary sm:block">
                   {keyword_count} kelime
                 </div>
-                <div className="w-28 shrink-0 text-right text-[12px] text-ink-tertiary">
-                  {backlink_count === null ? "Backlink: yakında" : backlink_count}
-                </div>
+                <div className="hidden w-28 shrink-0 text-right text-[12px] text-ink-tertiary sm:block">{backlinkLabel}</div>
 
                 {!isPrimary ? (
                   <button

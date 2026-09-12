@@ -4,7 +4,8 @@ import {
   closestCorners,
   DndContext,
   DragOverlay,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
   useDroppable,
   useSensor,
   useSensors,
@@ -104,7 +105,7 @@ function KanbanCard({ item }: { item: ActionItem }) {
       {...listeners}
       {...attributes}
       style={{ transform: CSS.Transform.toString(transform), transition: transition ?? undefined }}
-      className={cn("cursor-grab touch-none transition-opacity duration-[120ms] active:cursor-grabbing", isDragging && "opacity-40")}
+      className={cn("cursor-grab touch-manipulation select-none transition-opacity duration-[120ms] active:cursor-grabbing", isDragging && "opacity-40")}
     >
       <KanbanCardBody item={item} className="transition-[border-color] duration-[120ms] hover:border-l-accent/60" />
     </div>
@@ -158,7 +159,12 @@ export function KanbanBoard({
     if (!draggingRef.current) setLocalItems(items);
   }, [items]);
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+  // Dokunmatikte sürükleme kısa bir basılı tutmayla başlar; böylece kartların
+  // üzerinden parmakla sayfa kaydırılabilir (kartlar touch-action: manipulation).
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 8 } })
+  );
 
   function handleDragStart(event: DragStartEvent) {
     draggingRef.current = true;
@@ -230,7 +236,7 @@ export function KanbanBoard({
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
         {COLUMNS.map((col) => (
           <KanbanColumn key={col.status} status={col.status} dot={col.dot} items={localItems.filter((i) => i.status === col.status)} />
         ))}

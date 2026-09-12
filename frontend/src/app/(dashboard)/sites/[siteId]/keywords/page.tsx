@@ -7,6 +7,7 @@ import { use, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { PageBody } from "@/components/layout/page-body";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -60,11 +61,11 @@ function KeywordRow({ keyword, siteId }: { keyword: Keyword; siteId: number }) {
 
   return (
     <div className="border-t border-border first:border-t-0">
-      <div className="flex items-center gap-3 px-5 py-3">
+      <div className="flex items-center gap-2 px-4 py-3 sm:gap-3 sm:px-5">
         <button
           type="button"
           onClick={() => setExpanded((v) => !v)}
-          className="flex flex-1 items-center gap-3 text-left"
+          className="flex min-w-0 flex-1 items-center gap-3 text-left"
         >
           <ChevronDown className={cn("h-3.5 w-3.5 shrink-0 text-ink-tertiary transition-transform duration-[120ms]", expanded && "rotate-180")} strokeWidth={2.3} />
           <div className="min-w-0 flex-1">
@@ -73,7 +74,7 @@ function KeywordRow({ keyword, siteId }: { keyword: Keyword; siteId: number }) {
           </div>
         </button>
 
-        <div className="w-20 shrink-0 text-right text-[13px] font-semibold tabular-nums">
+        <div className="w-14 shrink-0 text-right text-[13px] font-semibold tabular-nums sm:w-20">
           {position === null ? <span className="text-ink-tertiary">—</span> : `#${position}`}
         </div>
 
@@ -143,14 +144,14 @@ export default function SiteKeywordsPage({ params }: { params: Promise<{ siteId:
     <div>
       <PageHeader breadcrumb={<Link href={`/sites/${id}`}>{site?.name ?? "Site"}</Link>} title="Anahtar Kelimeler" />
 
-      <div className="flex flex-col gap-4 px-8 py-6">
+      <PageBody className="flex flex-col gap-4">
         <Card className="p-4">
           <form onSubmit={handleSubmit(onSubmit)} className="flex items-start gap-2">
-            <div className="flex-1">
+            <div className="min-w-0 flex-1">
               <Input placeholder="Örn. python öğren" {...register("keyword")} />
               <FieldError>{errors.keyword?.message}</FieldError>
             </div>
-            <Button type="submit" size="sm" disabled={createKeyword.isPending}>
+            <Button type="submit" size="sm" disabled={createKeyword.isPending} className="h-9 shrink-0">
               <Plus className="h-3.5 w-3.5" strokeWidth={2.3} />
               {createKeyword.isPending ? "Ekleniyor…" : "Kelime Ekle"}
             </Button>
@@ -174,7 +175,7 @@ export default function SiteKeywordsPage({ params }: { params: Promise<{ siteId:
             </div>
           )}
         </Card>
-      </div>
+      </PageBody>
     </div>
   );
 }

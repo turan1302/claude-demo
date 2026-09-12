@@ -6,7 +6,8 @@ export const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttribute
     <input
       ref={ref}
       className={cn(
-        "h-9 w-full rounded-md border border-border bg-surface px-3 text-sm text-ink placeholder:text-ink-tertiary transition-colors duration-[120ms] focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20",
+        // text-base (16px) mobilde: iOS Safari 16px altı input'a odaklanınca sayfayı yakınlaştırıyor.
+        "h-9 w-full rounded-md border border-border bg-surface px-3 text-base text-ink sm:text-sm placeholder:text-ink-tertiary transition-colors duration-[120ms] focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20",
         className
       )}
       {...props}

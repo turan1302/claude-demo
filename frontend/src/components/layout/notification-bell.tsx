@@ -7,7 +7,6 @@ import {
   useMarkAllNotificationsRead,
   useMarkNotificationRead,
   useNotifications,
-  useNotificationRealtime,
   useUnreadNotificationCount,
 } from "@/hooks/use-notifications";
 import { cn } from "@/lib/utils";
@@ -22,9 +21,12 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(hours / 24)}g önce`;
 }
 
-/** `className` verilirse varsayılan renk/hover sınıflarının yerine geçer. */
-export function NotificationBell({ className }: { className?: string }) {
-  useNotificationRealtime();
+/**
+ * `className` verilirse varsayılan renk/hover sınıflarının yerine geçer.
+ * Realtime aboneliği burada değil, NotificationRealtime'da kurulur (bu
+ * bileşen hem mobil barda hem sidebar'da render ediliyor).
+ */
+export function NotificationBell({ className, align = "start" }: { className?: string; align?: "start" | "end" }) {
   const { data: unreadCount } = useUnreadNotificationCount();
   const { data: notifications } = useNotifications();
   const markRead = useMarkNotificationRead();
@@ -52,9 +54,10 @@ export function NotificationBell({ className }: { className?: string }) {
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
-          align="start"
+          align={align}
           sideOffset={8}
-          className="z-50 w-80 rounded-lg border border-border bg-surface p-1.5 shadow-lg"
+          collisionPadding={16}
+          className="z-50 w-[min(20rem,calc(100vw-2rem))] rounded-lg border border-border bg-surface p-1.5 shadow-lg"
         >
           <div className="flex items-center justify-between px-2.5 py-2">
             <span className="text-[12.5px] font-semibold">Bildirimler</span>

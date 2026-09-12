@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { PageBody } from "@/components/layout/page-body";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -50,7 +51,7 @@ export default function NewSitePage() {
     <div>
       <PageHeader title="Site Ekle" description="Analiz edilecek sitenin adresini girin." />
 
-      <div className="px-8 py-6">
+      <PageBody>
         <Card className="max-w-lg p-5">
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
@@ -74,7 +75,7 @@ export default function NewSitePage() {
             </Button>
           </form>
         </Card>
-      </div>
+      </PageBody>
     </div>
   );
 }

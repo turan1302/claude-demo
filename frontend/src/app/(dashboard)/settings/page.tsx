@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { PageBody } from "@/components/layout/page-body";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -71,7 +72,7 @@ function ProfileForm() {
   };
 
   return (
-    <Card className="max-w-sm p-5">
+    <Card className="p-5">
       <h2 className="text-sm font-semibold">Hesap Bilgileri</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-4 flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
@@ -117,7 +118,7 @@ function PasswordForm() {
   };
 
   return (
-    <Card className="max-w-sm p-5">
+    <Card className="p-5">
       <h2 className="text-sm font-semibold">Şifre Değiştir</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-4 flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
@@ -153,17 +154,17 @@ export default function SettingsPage() {
     <div>
       <PageHeader title="Ayarlar" />
 
-      <div className="flex flex-col gap-4 px-8 py-6">
-        <div className="flex flex-wrap gap-4">
+      <PageBody className="flex flex-col gap-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:max-w-3xl">
           <ProfileForm />
           <PasswordForm />
         </div>
 
         {LINKS.map((link) => (
           <Link key={link.href} href={link.href}>
-            <Card className="flex items-center justify-between p-5 transition-colors duration-[120ms] hover:bg-surface-hover">
+            <Card className="flex items-center justify-between gap-3 p-5 transition-colors duration-[120ms] hover:bg-surface-hover">
               <div className="flex items-center gap-3.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-md bg-accent/12">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent/12">
                   <link.icon className="h-[15px] w-[15px] text-accent" strokeWidth={2} />
                 </div>
                 <div>
@@ -171,11 +172,11 @@ export default function SettingsPage() {
                   <div className="mt-0.5 text-[12.5px] text-ink-tertiary">{link.description}</div>
                 </div>
               </div>
-              <ChevronRight className="h-4 w-4 text-ink-tertiary" strokeWidth={2} />
+              <ChevronRight className="h-4 w-4 shrink-0 text-ink-tertiary" strokeWidth={2} />
             </Card>
           </Link>
         ))}
-      </div>
+      </PageBody>
     </div>
   );
 }

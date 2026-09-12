@@ -50,7 +50,7 @@ export function CommandPalette() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 pt-[15vh]"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 px-4 pt-[10vh] sm:pt-[15vh]"
       onClick={() => setOpen(false)}
     >
       <Command
@@ -63,12 +63,12 @@ export function CommandPalette() {
           <Command.Input
             autoFocus
             placeholder="Site ara veya bir komut yaz…"
-            className="flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-tertiary"
+            className="min-w-0 flex-1 bg-transparent text-base text-ink outline-none placeholder:text-ink-tertiary sm:text-sm"
           />
-          <kbd className="rounded border border-border px-1.5 py-0.5 text-[10px] text-ink-tertiary">ESC</kbd>
+          <kbd className="hidden rounded border border-border px-1.5 py-0.5 text-[10px] text-ink-tertiary sm:inline">ESC</kbd>
         </div>
 
-        <Command.List className="max-h-80 overflow-y-auto p-1.5">
+        <Command.List className="max-h-[60vh] overflow-y-auto p-1.5 sm:max-h-80">
           <Command.Empty className="px-3 py-6 text-center text-[13px] text-ink-tertiary">Sonuç bulunamadı.</Command.Empty>
 
           <Command.Group heading="Sayfalar" className="px-2 py-1.5 text-[11px] font-bold uppercase tracking-wide text-ink-tertiary">

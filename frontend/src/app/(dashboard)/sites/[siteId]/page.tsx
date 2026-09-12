@@ -4,6 +4,7 @@ import { ListChecks, RefreshCw, Search, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { use } from "react";
+import { PageBody } from "@/components/layout/page-body";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,7 +30,7 @@ export default function SiteDetailPage({ params }: { params: Promise<{ siteId: s
   useAnalysisStatus(isRunning ? analysis?.id : undefined);
 
   if (isLoading || !site) {
-    return <div className="px-8 py-6 text-sm text-ink-tertiary">Yükleniyor…</div>;
+    return <PageBody className="text-sm text-ink-tertiary">Yükleniyor…</PageBody>;
   }
 
   return (
@@ -39,7 +40,7 @@ export default function SiteDetailPage({ params }: { params: Promise<{ siteId: s
         title={site.name ?? site.url}
         description={site.url}
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <SiteStatusPill status={site.status} />
             <Button variant="secondary" size="sm" disabled={isRunning || analyze.isPending} onClick={() => analyze.mutate(id)}>
               <RefreshCw className="h-3.5 w-3.5" strokeWidth={2.2} />
@@ -61,7 +62,7 @@ export default function SiteDetailPage({ params }: { params: Promise<{ siteId: s
         }
       />
 
-      <div className="flex flex-col gap-4 px-8 py-6">
+      <PageBody className="flex flex-col gap-4">
         {isRunning ? (
           <Card className="flex items-center gap-3 px-5 py-3.5">
             <RefreshCw className="h-4 w-4 animate-spin text-accent" strokeWidth={2.2} />
@@ -76,8 +77,8 @@ export default function SiteDetailPage({ params }: { params: Promise<{ siteId: s
         ) : null}
 
         {analysis && analysis.status === "completed" ? (
-          <div className="grid grid-cols-2 gap-4">
-            <Card className="flex items-center gap-6 p-5">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Card className="flex items-center gap-4 p-4 sm:gap-6 sm:p-5">
               <ScoreGauge score={analysis.overall_seo_score} />
               <div>
                 <div className="text-sm font-semibold text-ink-secondary">SEO Skoru</div>
@@ -86,7 +87,7 @@ export default function SiteDetailPage({ params }: { params: Promise<{ siteId: s
                 </p>
               </div>
             </Card>
-            <Card className="flex items-center gap-6 p-5">
+            <Card className="flex items-center gap-4 p-4 sm:gap-6 sm:p-5">
               <ScoreGauge score={analysis.overall_geo_score} />
               <div>
                 <div className="text-sm font-semibold text-ink-secondary">GEO Skoru</div>
@@ -99,7 +100,7 @@ export default function SiteDetailPage({ params }: { params: Promise<{ siteId: s
         ) : null}
 
         {analysis && analysis.status === "completed" ? (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <Link href={`/sites/${id}/analyses/${analysis.id}`}>
               <Card className="flex items-center justify-between p-5 transition-colors duration-[120ms] hover:bg-surface-hover">
                 <div>
@@ -111,7 +112,7 @@ export default function SiteDetailPage({ params }: { params: Promise<{ siteId: s
             <Link href={`/sites/${id}/action-plan`}>
               <Card className="flex items-center justify-between p-5 transition-colors duration-[120ms] hover:bg-surface-hover">
                 <div className="flex items-center gap-3">
-                  <ListChecks className="h-5 w-5 text-accent" strokeWidth={2} />
+                  <ListChecks className="h-5 w-5 shrink-0 text-accent" strokeWidth={2} />
                   <div>
                     <div className="text-sm font-semibold">Aksiyon Planı</div>
                     <div className="mt-1 text-[12.5px] text-ink-tertiary">
@@ -128,7 +129,7 @@ export default function SiteDetailPage({ params }: { params: Promise<{ siteId: s
           <Link href={`/sites/${id}/keywords`}>
             <Card className="flex items-center justify-between p-5 transition-colors duration-[120ms] hover:bg-surface-hover">
               <div className="flex items-center gap-3">
-                <Search className="h-5 w-5 text-accent" strokeWidth={2} />
+                <Search className="h-5 w-5 shrink-0 text-accent" strokeWidth={2} />
                 <div>
                   <div className="text-sm font-semibold">Anahtar Kelime Takibi</div>
                   <div className="mt-1 text-[12.5px] text-ink-tertiary">Arama sıralaması trendini takip edin</div>
@@ -151,7 +152,7 @@ export default function SiteDetailPage({ params }: { params: Promise<{ siteId: s
             {analysis ? `En son: Sürüm ${analysis.version}` : "Henüz analiz yok."}
           </div>
         </Card>
-      </div>
+      </PageBody>
     </div>
   );
 }

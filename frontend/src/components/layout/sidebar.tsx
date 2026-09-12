@@ -3,6 +3,7 @@
 import { Globe, LayoutDashboard, ListChecks, LogOut, Search, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 import { useCurrentUser, useLogout } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -16,7 +17,7 @@ const NAV_ITEMS = [
   { href: "/settings", label: "Ayarlar", icon: Settings },
 ];
 
-const SIDEBAR_ICON_BUTTON = "text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-ink";
+export const SIDEBAR_ICON_BUTTON = "text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-ink";
 
 function initials(name: string) {
   return name
@@ -27,29 +28,34 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-export function Sidebar() {
+/**
+ * Logo, arama, menü ve kullanıcı bloğu. Masaüstü sidebar'ı ve mobil menü
+ * paneli (MobileNav) ortak kullanır; `onNavigate` panelde bir bağlantıya
+ * tıklanınca paneli kapatmak içindir.
+ */
+export function SidebarContent({ headerActions, onNavigate }: { headerActions?: ReactNode; onNavigate?: () => void }) {
   const pathname = usePathname();
   const { data: user } = useCurrentUser();
   const logout = useLogout();
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col gap-1 border-r border-sidebar-border bg-sidebar p-3 text-sidebar-ink">
+    <div className="flex h-full flex-col gap-1 overflow-y-auto p-3">
       <div className="flex items-center justify-between px-1.5 pb-5 pt-1">
         <BrandMark inverted subtitle="SEO/GEO Paneli" />
-        <div className="flex items-center gap-0.5">
-          <NotificationBell className={SIDEBAR_ICON_BUTTON} />
-          <ThemeToggle className={SIDEBAR_ICON_BUTTON} />
-        </div>
+        <div className="flex items-center gap-0.5">{headerActions}</div>
       </div>
 
       <button
         type="button"
-        onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
+        onClick={() => {
+          onNavigate?.();
+          window.dispatchEvent(new Event("open-command-palette"));
+        }}
         className="mb-3 flex items-center gap-2.5 rounded-md border border-sidebar-border bg-white/5 px-2.5 py-2 text-[13px] text-sidebar-muted transition-colors duration-[120ms] hover:bg-sidebar-hover hover:text-sidebar-ink"
       >
         <Search className="h-[15px] w-[15px]" strokeWidth={2} />
         <span className="flex-1 text-left">Ara…</span>
-        <kbd className="rounded border border-sidebar-border px-1.5 py-0.5 text-[10px]">⌘K</kbd>
+        <kbd className="hidden rounded border border-sidebar-border px-1.5 py-0.5 text-[10px] lg:inline">⌘K</kbd>
       </button>
 
       <div className="px-2.5 pb-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-sidebar-muted/80">
@@ -64,6 +70,7 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onNavigate}
               className={cn(
                 "relative flex items-center gap-2.5 rounded-md px-2.5 py-2 text-[13.5px] font-medium transition-colors duration-[120ms]",
                 active
@@ -97,6 +104,22 @@ export function Sidebar() {
           </button>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+/** Masaüstü (lg ve üstü) sabit sidebar; daha küçük ekranlarda MobileNav devralır. */
+export function Sidebar() {
+  return (
+    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 border-r border-sidebar-border bg-sidebar text-sidebar-ink lg:block">
+      <SidebarContent
+        headerActions={
+          <>
+            <NotificationBell className={SIDEBAR_ICON_BUTTON} />
+            <ThemeToggle className={SIDEBAR_ICON_BUTTON} />
+          </>
+        }
+      />
     </aside>
   );
 }

@@ -4,6 +4,7 @@ import { Mail, Send, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
+import { PageBody } from "@/components/layout/page-body";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,7 +22,7 @@ import { reportFormatLabels, reportFrequencyLabels } from "@/lib/labels";
 import type { ReportFormat, ReportFrequency } from "@/types/api";
 
 const selectClass =
-  "h-9 rounded-md border border-border bg-surface px-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20";
+  "h-9 rounded-md border border-border bg-surface px-3 text-base focus:border-accent sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent/20";
 
 export default function ReportsSettingsPage() {
   const { data: subscriptions } = useReportSubscriptions();
@@ -46,15 +47,15 @@ export default function ReportsSettingsPage() {
     <div>
       <PageHeader breadcrumb={<Link href="/settings">Ayarlar</Link>} title="Raporlama" />
 
-      <div className="flex flex-col gap-4 px-8 py-6">
+      <PageBody className="flex flex-col gap-4">
         <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Abonelikler</CardTitle>
           </CardHeader>
           {subscriptions && subscriptions.length > 0 ? (
             subscriptions.map((sub) => (
-              <div key={sub.id} className="flex items-center gap-4 border-t border-border px-5 py-3.5 first:border-t-0">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent/12">
+              <div key={sub.id} className="flex items-center gap-3 border-t border-border px-4 py-3.5 first:border-t-0 sm:gap-4 sm:px-5">
+                <div className="hidden h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent/12 sm:flex">
                   <Mail className="h-[15px] w-[15px] text-accent" strokeWidth={2} />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -147,7 +148,7 @@ export default function ReportsSettingsPage() {
             </Button>
           </div>
         </Card>
-      </div>
+      </PageBody>
     </div>
   );
 }

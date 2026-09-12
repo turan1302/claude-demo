@@ -27,7 +27,7 @@ export default function LoginPage() {
   const onSubmit = (values: FormValues) => login.mutate(values);
 
   return (
-    <Card className="p-7">
+    <Card className="p-5 sm:p-7">
       <h1 className="text-lg font-semibold">Giriş yap</h1>
       <p className="mt-1 text-[13px] text-ink-tertiary">Sitelerinizi yönetmek için hesabınıza giriş yapın.</p>
 

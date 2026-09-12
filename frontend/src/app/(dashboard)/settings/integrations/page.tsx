@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { PageBody } from "@/components/layout/page-body";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,20 +52,20 @@ export default function IntegrationsPage() {
     <div>
       <PageHeader breadcrumb={<Link href="/settings">Ayarlar</Link>} title="Entegrasyonlar" />
 
-      <div className="flex flex-col gap-4 px-8 py-6">
+      <PageBody className="flex flex-col gap-4">
         <Card className="overflow-hidden">
           <CardHeader>
             <CardTitle>Kayıtlı Anahtarlar</CardTitle>
           </CardHeader>
           {integrations && integrations.length > 0 ? (
             integrations.map((integration) => (
-              <div key={integration.id} className="flex items-center gap-3.5 border-t border-border px-5 py-3.5 first:border-t-0">
+              <div key={integration.id} className="flex items-center gap-3.5 border-t border-border px-4 py-3.5 first:border-t-0 sm:px-5">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-accent/12">
                   <KeyRound className="h-[15px] w-[15px] text-accent" strokeWidth={2} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-semibold">{PROVIDER_LABELS[integration.provider]}</div>
-                  <div className="text-[12.5px] text-ink-tertiary">{integration.masked_key}</div>
+                  <div className="break-all text-[12.5px] text-ink-tertiary">{integration.masked_key}</div>
                 </div>
                 <button
                   type="button"
@@ -96,7 +97,7 @@ export default function IntegrationsPage() {
               <FieldLabel htmlFor="provider">Sağlayıcı</FieldLabel>
               <select
                 id="provider"
-                className="h-9 rounded-md border border-border bg-surface px-3 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                className="h-9 rounded-md border border-border bg-surface px-3 text-base focus:border-accent sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
                 {...register("provider")}
               >
                 {Object.entries(PROVIDER_LABELS).map(([value, label]) => (
@@ -122,7 +123,7 @@ export default function IntegrationsPage() {
             </Button>
           </form>
         </Card>
-      </div>
+      </PageBody>
     </div>
   );
 }

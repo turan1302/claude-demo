@@ -3,6 +3,7 @@
 import { AlertTriangle, CheckCircle2, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { use, useMemo } from "react";
+import { PageBody } from "@/components/layout/page-body";
 import { PageHeader } from "@/components/layout/page-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,9 +25,9 @@ const IMPACT_TONE: Record<string, string> = {
 
 function CwvMetric({ label, value, good }: { label: string; value: string; good: boolean }) {
   return (
-    <div className="flex flex-col gap-1.5 border-l border-border p-4 first:border-l-0">
+    <div className="flex flex-col gap-1.5 border-l border-border p-3 first:border-l-0 sm:p-4">
       <div className="text-[11.5px] font-bold tracking-wide text-ink-tertiary">{label}</div>
-      <div className="text-xl font-bold">{value}</div>
+      <div className="text-lg font-bold sm:text-xl">{value}</div>
       <div className={cn("flex items-center gap-1 text-[11.5px] font-semibold", good ? "text-good" : "text-warn")}>
         <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: "currentColor" }} />
         {good ? "İyi" : "İyileştirilmeli"}
@@ -65,7 +66,7 @@ export default function AnalysisResultsPage({
   );
 
   if (isLoading || !analysis) {
-    return <div className="px-8 py-6 text-sm text-ink-tertiary">Yükleniyor…</div>;
+    return <PageBody className="text-sm text-ink-tertiary">Yükleniyor…</PageBody>;
   }
 
   const mobileVitals = analysis.core_web_vitals?.mobile;
@@ -84,9 +85,9 @@ export default function AnalysisResultsPage({
         }
       />
 
-      <div className="flex flex-col gap-5 px-8 py-6">
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="flex items-center gap-6 p-5">
+      <PageBody className="flex flex-col gap-5">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Card className="flex items-center gap-4 p-4 sm:gap-6 sm:p-5">
             <ScoreGauge score={analysis.overall_seo_score} />
             <div>
               <div className="text-sm font-semibold text-ink-secondary">SEO Skoru</div>
@@ -95,7 +96,7 @@ export default function AnalysisResultsPage({
               </p>
             </div>
           </Card>
-          <Card className="flex items-center gap-6 p-5">
+          <Card className="flex items-center gap-4 p-4 sm:gap-6 sm:p-5">
             <ScoreGauge score={analysis.overall_geo_score} />
             <div>
               <div className="text-sm font-semibold text-ink-secondary">GEO Skoru</div>
@@ -106,7 +107,7 @@ export default function AnalysisResultsPage({
           </Card>
         </div>
 
-        <div className="grid grid-cols-[1.4fr_1fr] items-start gap-4">
+        <div className="grid grid-cols-1 items-start gap-4 xl:grid-cols-[1.4fr_1fr]">
           <Card className="overflow-hidden">
             <CardHeader>
               <CardTitle>Bulgular ({analysis.findings?.length ?? 0})</CardTitle>
@@ -116,7 +117,7 @@ export default function AnalysisResultsPage({
               const findings = findingsByCategory.get(category) ?? [];
               return (
                 <div key={category} className="border-t border-border first:border-t-0">
-                  <div className="flex items-center gap-2.5 px-5 pb-2.5 pt-3.5">
+                  <div className="flex items-center gap-2.5 px-4 pb-2.5 pt-3.5 sm:px-5">
                     <span className="text-[12.5px] font-bold uppercase tracking-wide text-ink-tertiary">
                       {categoryLabels[category]}
                     </span>
@@ -125,11 +126,11 @@ export default function AnalysisResultsPage({
                     </span>
                   </div>
                   {findings.map((finding) => (
-                    <div key={finding.id} className="flex items-start gap-3.5 px-5 py-3">
+                    <div key={finding.id} className="flex items-start gap-3 px-4 py-3 sm:gap-3.5 sm:px-5">
                       <span className={cn("mt-1.5 h-2 w-2 shrink-0 rounded-full", priorityDotColors[finding.severity])} />
                       <div className="min-w-0 flex-1">
-                        <div className="text-[13.5px] font-semibold">{finding.title}</div>
-                        <div className="mt-0.5 text-[12.5px] leading-relaxed text-ink-tertiary">{finding.description}</div>
+                        <div className="break-words text-[13.5px] font-semibold">{finding.title}</div>
+                        <div className="mt-0.5 break-words text-[12.5px] leading-relaxed text-ink-tertiary">{finding.description}</div>
                       </div>
                       <span className={cn("shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold", IMPACT_TONE[finding.severity])}>
                         -{finding.score_impact}
@@ -171,7 +172,7 @@ export default function AnalysisResultsPage({
               <CardHeader>
                 <CardTitle>Yapılandırılmış Veri</CardTitle>
               </CardHeader>
-              <div className="flex items-start gap-3.5 px-5 py-4">
+              <div className="flex items-start gap-3.5 px-4 py-4 sm:px-5">
                 <div className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-md", hasStructuredData ? "bg-good/12" : "bg-bad/12")}>
                   {hasStructuredData ? (
                     <CheckCircle2 className="h-[18px] w-[18px] text-good" strokeWidth={2.2} />
@@ -193,7 +194,7 @@ export default function AnalysisResultsPage({
             </Card>
           </div>
         </div>
-      </div>
+      </PageBody>
     </div>
   );
 }

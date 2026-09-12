@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { KanbanBoard } from "@/components/action-plan/kanban-board";
+import { PageBody } from "@/components/layout/page-body";
 import { PageHeader } from "@/components/layout/page-header";
 import { useActionItems, useReorderActionItem } from "@/hooks/use-action-items";
 import { actionStatusLabels, categoryLabels } from "@/lib/labels";
@@ -27,7 +28,7 @@ export default function ActionItemsPage() {
       <PageHeader
         title="Aksiyon Maddeleri"
         actions={
-          <div className="flex gap-1.5">
+          <div className="flex flex-wrap gap-1.5">
             {FILTERS.map((filter) => (
               <button
                 key={filter.value}
@@ -47,7 +48,7 @@ export default function ActionItemsPage() {
         }
       />
 
-      <div className="px-8 py-6">
+      <PageBody>
         {isLoading ? (
           <div className="text-sm text-ink-tertiary">Yükleniyor…</div>
         ) : items && items.length > 0 ? (
@@ -65,7 +66,7 @@ export default function ActionItemsPage() {
         ) : (
           <div className="text-sm text-ink-tertiary">Bu filtrede aksiyon maddesi yok.</div>
         )}
-      </div>
+      </PageBody>
     </div>
   );
 }

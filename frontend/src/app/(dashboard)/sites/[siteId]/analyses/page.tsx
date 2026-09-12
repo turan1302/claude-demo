@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { use } from "react";
+import { PageBody } from "@/components/layout/page-body";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card } from "@/components/ui/card";
 import { ScoreChip } from "@/components/ui/badges";
@@ -17,15 +18,17 @@ export default function SiteAnalysesPage({ params }: { params: Promise<{ siteId:
     <div>
       <PageHeader breadcrumb={<Link href={`/sites/${id}`}>Site</Link>} title="Versiyon Geçmişi" />
 
-      <div className="px-8 py-6">
+      <PageBody>
         <Card className="overflow-hidden">
           {isLoading ? (
             <div className="px-5 py-10 text-center text-sm text-ink-tertiary">Yükleniyor…</div>
           ) : analyses && analyses.length > 0 ? (
             analyses.map((analysis, index) => {
               const previous = analyses[index + 1];
+              const completed = analysis.status === "completed";
+              const canCompare = previous && completed && previous.status === "completed";
               return (
-                <div key={analysis.id} className="flex items-center gap-4 border-t border-border px-5 py-3.5 first:border-t-0">
+                <div key={analysis.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border px-4 py-3.5 first:border-t-0 sm:px-5">
                   <Link href={`/sites/${id}/analyses/${analysis.id}`} className="min-w-0 flex-1">
                     <div className="text-sm font-semibold">Sürüm {analysis.version}</div>
                     <div className="text-[12.5px] text-ink-tertiary">
@@ -33,19 +36,24 @@ export default function SiteAnalysesPage({ params }: { params: Promise<{ siteId:
                       {analysis.completed_at ? ` · ${new Date(analysis.completed_at).toLocaleString("tr-TR")}` : ""}
                     </div>
                   </Link>
-                  {analysis.status === "completed" ? (
-                    <div className="flex shrink-0 gap-2">
-                      <ScoreChip label="SEO" score={analysis.overall_seo_score} />
-                      <ScoreChip label="GEO" score={analysis.overall_geo_score} />
+                  {/* Telefonda skorlar ve karşılaştır bağlantısı ikinci satıra iner. */}
+                  {completed || canCompare ? (
+                    <div className="flex w-full flex-wrap items-center gap-x-4 gap-y-2 sm:w-auto">
+                      {completed ? (
+                        <div className="flex gap-2">
+                          <ScoreChip label="SEO" score={analysis.overall_seo_score} />
+                          <ScoreChip label="GEO" score={analysis.overall_geo_score} />
+                        </div>
+                      ) : null}
+                      {canCompare ? (
+                        <Link
+                          href={`/sites/${id}/analyses/${analysis.id}/compare/${previous.id}`}
+                          className="text-[13px] font-semibold text-accent"
+                        >
+                          Önceki ile karşılaştır
+                        </Link>
+                      ) : null}
                     </div>
-                  ) : null}
-                  {previous && analysis.status === "completed" && previous.status === "completed" ? (
-                    <Link
-                      href={`/sites/${id}/analyses/${analysis.id}/compare/${previous.id}`}
-                      className="shrink-0 text-[13px] font-semibold text-accent"
-                    >
-                      Önceki ile karşılaştır
-                    </Link>
                   ) : null}
                 </div>
               );
@@ -54,7 +62,7 @@ export default function SiteAnalysesPage({ params }: { params: Promise<{ siteId:
             <div className="px-5 py-10 text-center text-sm text-ink-tertiary">Henüz analiz yapılmadı.</div>
           )}
         </Card>
-      </div>
+      </PageBody>
     </div>
   );
 }

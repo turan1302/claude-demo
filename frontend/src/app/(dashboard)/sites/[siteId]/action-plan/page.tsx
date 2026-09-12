@@ -4,6 +4,7 @@ import Link from "next/link";
 import { use } from "react";
 import { toast } from "sonner";
 import { KanbanBoard } from "@/components/action-plan/kanban-board";
+import { PageBody } from "@/components/layout/page-body";
 import { PageHeader } from "@/components/layout/page-header";
 import { useActionPlan } from "@/hooks/use-analysis";
 import { useSite } from "@/hooks/use-sites";
@@ -23,7 +24,7 @@ export default function SiteActionPlanPage({ params }: { params: Promise<{ siteI
     <div>
       <PageHeader breadcrumb={<Link href={`/sites/${id}`}>{site?.name ?? "Site"}</Link>} title="Aksiyon Planı" />
 
-      <div className="px-8 py-6">
+      <PageBody>
         {isLoading ? (
           <div className="text-sm text-ink-tertiary">Yükleniyor…</div>
         ) : plan && plan.items.length > 0 ? (
@@ -41,7 +42,7 @@ export default function SiteActionPlanPage({ params }: { params: Promise<{ siteI
         ) : (
           <div className="text-sm text-ink-tertiary">Bu site için henüz bir aksiyon planı oluşturulmadı.</div>
         )}
-      </div>
+      </PageBody>
     </div>
   );
 }

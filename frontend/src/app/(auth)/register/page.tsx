@@ -34,7 +34,7 @@ export default function RegisterPage() {
   const onSubmit = (values: FormValues) => register_.mutate(values);
 
   return (
-    <Card className="p-7">
+    <Card className="p-5 sm:p-7">
       <h1 className="text-lg font-semibold">Hesap oluştur</h1>
       <p className="mt-1 text-[13px] text-ink-tertiary">Sitelerinizi analiz etmeye başlayın.</p>
 

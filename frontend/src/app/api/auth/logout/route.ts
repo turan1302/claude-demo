@@ -17,5 +17,11 @@ export async function POST() {
 
   clearAuthCookie(cookieStore);
 
-  return NextResponse.json({}, { status: 204 });
+  // 204 (No Content) yanıtları spesifikasyon gereği body içeremez;
+  // NextResponse.json(..., {status:204}) production'da (Node'un native
+  // fetch/Response'unda) "Invalid response status code 204" ile çöküyordu
+  // — bu çökme clearAuthCookie'nin Set-Cookie header'ının yanıta hiç
+  // yazılmamasına, yani tarayıcıdaki auth cookie'sinin asla silinmemesine
+  // yol açıyordu.
+  return new NextResponse(null, { status: 204 });
 }

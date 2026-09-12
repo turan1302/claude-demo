@@ -76,14 +76,17 @@ export function useUpdatePassword() {
 
 export function useLogout() {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation({
     mutationFn: () => fetch("/api/auth/logout", { method: "POST" }),
     onSuccess: () => {
       queryClient.clear();
-      router.push("/login");
-      router.refresh();
+      // Next.js'in istemci taraflı router cache'i, çıkış sonrası önceden
+      // ziyaret edilmiş korumalı sayfaları sunucuya sormadan (proxy.ts
+      // middleware'i atlayarak) gösterebiliyor. router.push yerine tam
+      // sayfa yenilemesiyle gitmek tüm önbelleği temizler ve her
+      // navigasyonun gerçekten middleware'den geçmesini garantiler.
+      window.location.href = "/login";
     },
   });
 }

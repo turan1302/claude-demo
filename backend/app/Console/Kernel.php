@@ -14,6 +14,13 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('app:check-keyword-rankings')->daily();
         $schedule->command('app:send-periodic-reports')->daily();
+
+        // Paylaşımlı hosting'de sürekli çalışan bir `queue:work` daemonu
+        // barındırılamaz (systemd/supervisor yok); bunun yerine kuyruk her
+        // dakika kısaca işletilip mevcut işler bitince kendiliğinden kapanır.
+        $schedule->command('queue:work --stop-when-empty --tries=1')
+            ->everyMinute()
+            ->withoutOverlapping();
     }
 
     /**

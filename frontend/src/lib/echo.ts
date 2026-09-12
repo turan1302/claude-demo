@@ -10,6 +10,16 @@ declare global {
 let echoInstance: InstanceType<typeof Echo> | null = null;
 
 /**
+ * Paylaşımlı hosting gibi Reverb'in çalışamadığı ortamlarda
+ * `NEXT_PUBLIC_REVERB_HOST` .env'e hiç eklenmez; bu durumda realtime
+ * hook'ları (bkz. use-notifications.ts, use-analysis-status.ts)
+ * WebSocket denemek yerine periyodik polling'e düşer.
+ */
+export function isRealtimeConfigured(): boolean {
+  return Boolean(process.env.NEXT_PUBLIC_REVERB_HOST);
+}
+
+/**
  * Tekil (singleton) Echo/Reverb bağlantısı. Private kanal doğrulaması
  * `/api/broadcasting-auth` üzerinden yapılır (bkz. o route handler'ın
  * açıklaması) — httpOnly auth cookie'si tarayıcıdan okunamadığı için

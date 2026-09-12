@@ -2,8 +2,10 @@
 
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { getEcho } from "@/lib/echo";
+import { getEcho, isRealtimeConfigured } from "@/lib/echo";
 import type { AnalysisStatus } from "@/types/api";
+
+const POLL_INTERVAL_MS = 3000;
 
 interface AnalysisStatusEvent {
   id: number;
@@ -19,13 +21,23 @@ interface AnalysisStatusEvent {
  * Bir analizin `private-site-analysis.{id}` kanalını dinler ve gelen
  * `SiteAnalysisStatusUpdated` event'lerinde ilgili React Query cache
  * girdilerini günceller — dashboard'daki tüm ekranlar sayfa yenilemeden
- * anlık ilerlemeyi görür.
+ * anlık ilerlemeyi görür. `NEXT_PUBLIC_REVERB_HOST` tanımlı değilse
+ * (örn. Reverb'in çalışamadığı paylaşımlı hosting ortamları) WebSocket
+ * yerine kısa aralıklarla polling'e düşer.
  */
 export function useAnalysisStatus(analysisId: number | undefined) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!analysisId) return;
+
+    if (!isRealtimeConfigured()) {
+      const interval = setInterval(() => {
+        queryClient.invalidateQueries({ queryKey: ["analyses", analysisId] });
+        queryClient.invalidateQueries({ queryKey: ["sites"] });
+      }, POLL_INTERVAL_MS);
+      return () => clearInterval(interval);
+    }
 
     const echo = getEcho();
     const channelName = `site-analysis.${analysisId}`;

@@ -1,0 +1,207 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "onMatchHeaders": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/api/proxy/[...path]",
+      "regex": "^/api/proxy/(.+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPpath": "nxtPpath"
+      },
+      "namedRegex": "^/api/proxy/(?<nxtPpath>.+?)(?:/)?$"
+    },
+    {
+      "page": "/sites/[siteId]",
+      "regex": "^/sites/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPsiteId": "nxtPsiteId"
+      },
+      "namedRegex": "^/sites/(?<nxtPsiteId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/sites/[siteId]/action-plan",
+      "regex": "^/sites/([^/]+?)/action\\-plan(?:/)?$",
+      "routeKeys": {
+        "nxtPsiteId": "nxtPsiteId"
+      },
+      "namedRegex": "^/sites/(?<nxtPsiteId>[^/]+?)/action\\-plan(?:/)?$"
+    },
+    {
+      "page": "/sites/[siteId]/analyses",
+      "regex": "^/sites/([^/]+?)/analyses(?:/)?$",
+      "routeKeys": {
+        "nxtPsiteId": "nxtPsiteId"
+      },
+      "namedRegex": "^/sites/(?<nxtPsiteId>[^/]+?)/analyses(?:/)?$"
+    },
+    {
+      "page": "/sites/[siteId]/analyses/[analysisId]",
+      "regex": "^/sites/([^/]+?)/analyses/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPsiteId": "nxtPsiteId",
+        "nxtPanalysisId": "nxtPanalysisId"
+      },
+      "namedRegex": "^/sites/(?<nxtPsiteId>[^/]+?)/analyses/(?<nxtPanalysisId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/sites/[siteId]/analyses/[analysisId]/compare/[compareId]",
+      "regex": "^/sites/([^/]+?)/analyses/([^/]+?)/compare/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPsiteId": "nxtPsiteId",
+        "nxtPanalysisId": "nxtPanalysisId",
+        "nxtPcompareId": "nxtPcompareId"
+      },
+      "namedRegex": "^/sites/(?<nxtPsiteId>[^/]+?)/analyses/(?<nxtPanalysisId>[^/]+?)/compare/(?<nxtPcompareId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/sites/[siteId]/keywords",
+      "regex": "^/sites/([^/]+?)/keywords(?:/)?$",
+      "routeKeys": {
+        "nxtPsiteId": "nxtPsiteId"
+      },
+      "namedRegex": "^/sites/(?<nxtPsiteId>[^/]+?)/keywords(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/action-items",
+      "regex": "^/action\\-items(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/action\\-items(?:/)?$"
+    },
+    {
+      "page": "/api/auth/login",
+      "regex": "^/api/auth/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/login(?:/)?$"
+    },
+    {
+      "page": "/api/auth/logout",
+      "regex": "^/api/auth/logout(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/logout(?:/)?$"
+    },
+    {
+      "page": "/api/auth/register",
+      "regex": "^/api/auth/register(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/register(?:/)?$"
+    },
+    {
+      "page": "/api/broadcasting-auth",
+      "regex": "^/api/broadcasting\\-auth(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/broadcasting\\-auth(?:/)?$"
+    },
+    {
+      "page": "/api/health",
+      "regex": "^/api/health(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/health(?:/)?$"
+    },
+    {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
+      "page": "/login",
+      "regex": "^/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/login(?:/)?$"
+    },
+    {
+      "page": "/register",
+      "regex": "^/register(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/register(?:/)?$"
+    },
+    {
+      "page": "/settings",
+      "regex": "^/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/settings(?:/)?$"
+    },
+    {
+      "page": "/settings/integrations",
+      "regex": "^/settings/integrations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/settings/integrations(?:/)?$"
+    },
+    {
+      "page": "/settings/reports",
+      "regex": "^/settings/reports(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/settings/reports(?:/)?$"
+    },
+    {
+      "page": "/sites",
+      "regex": "^/sites(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sites(?:/)?$"
+    },
+    {
+      "page": "/sites/new",
+      "regex": "^/sites/new(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sites/new(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

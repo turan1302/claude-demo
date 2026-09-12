@@ -20,10 +20,24 @@ class FetchSiteContentJob implements ShouldQueue
 {
     use BroadcastsAnalysisProgress, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $tries = 2;
+    public int $tries = 4;
 
     public function __construct(public readonly int $analysisId)
     {
+    }
+
+    /**
+     * Bazı paylaşımlı hosting ortamlarında (LVE thread/process kotası) cURL'ün
+     * DNS çözümlemesi için açtığı thread ara sıra "getaddrinfo() thread failed
+     * to start" hatasıyla başarısız olabiliyor — bu tamamen geçici bir kaynak
+     * sıkışıklığı, art arda denemekten çok kısa bir bekleme sonrası tekrar
+     * denemek çok daha güvenilir sonuç veriyor.
+     *
+     * @return array<int, int>
+     */
+    public function backoff(): array
+    {
+        return [10, 20, 40];
     }
 
     public function handle(HtmlFetcherService $fetcher): void

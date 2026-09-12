@@ -183,9 +183,51 @@ dönüyorsa cron'un kendiliğinden kuyruğu işlediği kanıtlanmış olur.
 
 ## 6) Frontend (Next.js)
 
-`TODO` — backend tamamlandı, frontend kurulumu bir sonraki adımda
-yapılacak (Hostinger'ın **Node.js App** özelliği ile, `frontend/server.js`
-custom server'ı kullanılarak; bkz. proje kökündeki bu dosya).
+**Web Siteleri → Site ekle → Web uygulamasını dağıtın (Node.js)**:
+
+1. **Public repository URL**: `https://github.com/<kullanici>/<repo>` (backend'de
+   olduğu gibi public repo).
+2. Sonraki ekranda **"Kök dizin"**i **`frontend`** olarak değiştirin (repo
+   köküne değil, monorepo'nun frontend alt klasörüne kurulur). Framework
+   ön ayarında Next.js seçeneği yoksa "Express" seçilebilir — sonucu
+   etkilemiyor, gerçek ayarları biz elle veriyoruz.
+3. **"Derleme ve çıktı ayarları"**: Paket yöneticisi `npm`, **Giriş
+   dosyası: `server.js`** (bu repo'daki `frontend/server.js`, tam da bu
+   amaçla — Passenger/LiteSpeed tarzı Node App yöneticilerinin beklediği
+   tek-dosya giriş noktası — hazırlanmış durumda).
+4. **Ortam değişkenleri**: `LARAVEL_API_URL=https://api.siteniz.com/api`,
+   `LARAVEL_BASE_URL=https://api.siteniz.com`. `NEXT_PUBLIC_REVERB_*`
+   değişkenlerini **eklemeyin** (polling fallback'in devreye girmesi için).
+5. **"Dağıt"**.
+
+**Kritik nokta — build adımı otomatik ÇALIŞMIYOR.** Hostinger'ın Node.js
+App aracı yalnızca `npm install` yapıyor, `npm run build`'i (Next.js'in
+derleme adımı) KENDİSİ çalıştırmıyor — `server.js` `.next` klasörünü
+bulamadığı için "Could not find a production build" hatasıyla
+başlayamıyor. Daha da kötüsü, bu hesapta `next build`'in kendisi de
+**sunucuda çalışmıyor** — Turbopack (ve webpack'e geçilince de
+TypeScript'in `tsc` alt-süreci) bu hesabın thread/process kotasını aşıp
+`EAGAIN`/`proc_open`-benzeri hatalarla çöküyor (bkz. aşağıdaki sorunlar
+listesi). **Çözüm**: build'i YEREL makinenizde çalıştırıp yalnızca
+`.next` klasörünü sunucuya kopyalayın:
+
+```bash
+# yerel makinede
+cd frontend && npm run build
+
+# sunucuya yükle (SSH ile deploy edilen gerçek dizin, "hbuilds/current"
+# bir symlink'tir; frontend kodunu her değiştirdiğinizde bu adımı tekrarlayın)
+rsync -az -e "ssh -p <PORT>" .next/ <kullanici>@<host>:~/domains/app.siteniz.com/hbuilds/current/nodejs/.next/
+
+# uygulamayı yeniden başlat (Passenger konvansiyonu)
+ssh -p <PORT> <kullanici>@<host> \
+  'touch ~/domains/app.siteniz.com/hbuilds/current/nodejs/tmp/restart.txt'
+```
+
+Bu proje için gerçek deploy dizini `hbuilds/current/nodejs/` şeklindeydi
+(Hostinger'ın kendi build/versiyonlama sistemi — `hbuilds/versions/<uuid>/`
+altında tutulup `current` bir symlink olarak gösteriliyor). Kendi
+hesabınızda `~/domains/<subdomain>/hbuilds/` altına bakarak doğrulayın.
 
 ## 7) Sık karşılaşılan sorunlar
 
@@ -196,6 +238,18 @@ custom server'ı kullanılarak; bkz. proje kökündeki bu dosya).
   hosting'de çalışmaz, atlayın (bkz. yukarıda).
 - **"The Process class relies on proc_open"**: `schedule:run`
   kullanmayı bırakıp 5. adımdaki gibi doğrudan cron'lara geçin.
+- **"cURL error 6: getaddrinfo() thread failed to start"** (analiz
+  bulguları/log'da) ya da build sırasında **"Resource temporarily
+  unavailable" / EAGAIN / "spawn ... EAGAIN"**: hepsi aynı kök nedene
+  (bu hesabın LVE thread/process kotası) işaret ediyor. cURL'ün DNS
+  çözümü için ayrı bir thread açması gerektiğinde (Guzzle'ın kullandığı
+  `curl_multi` arayüzü bunu gerektiriyor), hesap o an kotanın sınırında
+  olabiliyor ve arıza **geçici** oluyor — hemen ardından tekrar denemek
+  genelde başarılı oluyor. `FetchSiteContentJob`'a bu yüzden birkaç
+  saniye aralıklı otomatik yeniden deneme (`$tries` + `backoff()`)
+  eklendi; kendi ortamınızda benzer ağ hataları görürseniz aynı deseni
+  (deneme sayısını artırıp aralara bekleme koymak) diğer dış API'ye
+  bağımlı job'lara da uygulayabilirsiniz.
 - **"Route [login] not defined"** (log'da, zararsız): `Accept:
   application/json` header'ı olmayan bir isteğin 401 yerine login
   sayfasına yönlendirilmeye çalışılmasından kaynaklanır — gerçek

@@ -19,7 +19,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <QueryProvider>
             {children}
             <Toaster
-              theme="dark"
               position="top-right"
               toastOptions={{
                 style: {

@@ -1,11 +1,12 @@
 "use client";
 
-import { Globe, LayoutDashboard, ListChecks, LogOut, Search, Settings, Sparkle } from "lucide-react";
+import { Globe, LayoutDashboard, ListChecks, LogOut, Search, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCurrentUser, useLogout } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { BrandMark } from "@/components/layout/brand-mark";
 import { NotificationBell } from "@/components/layout/notification-bell";
 
 const NAV_ITEMS = [
@@ -14,6 +15,8 @@ const NAV_ITEMS = [
   { href: "/action-items", label: "Aksiyon Maddeleri", icon: ListChecks },
   { href: "/settings", label: "Ayarlar", icon: Settings },
 ];
+
+const SIDEBAR_ICON_BUTTON = "text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-ink";
 
 function initials(name: string) {
   return name
@@ -30,29 +33,28 @@ export function Sidebar() {
   const logout = useLogout();
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col gap-1 border-r border-border bg-surface p-3">
-      <div className="flex items-center justify-between px-2 pb-6 pt-1">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-accent">
-            <Sparkle className="h-3.5 w-3.5 text-white" strokeWidth={2.4} />
-          </div>
-          <span className="text-[14px] font-semibold tracking-tight">Ufuk</span>
-        </div>
-        <div className="flex items-center gap-1">
-          <NotificationBell />
-          <ThemeToggle />
+    <aside className="flex w-60 shrink-0 flex-col gap-1 border-r border-sidebar-border bg-sidebar p-3 text-sidebar-ink">
+      <div className="flex items-center justify-between px-1.5 pb-5 pt-1">
+        <BrandMark inverted subtitle="SEO/GEO Paneli" />
+        <div className="flex items-center gap-0.5">
+          <NotificationBell className={SIDEBAR_ICON_BUTTON} />
+          <ThemeToggle className={SIDEBAR_ICON_BUTTON} />
         </div>
       </div>
 
       <button
         type="button"
         onClick={() => window.dispatchEvent(new Event("open-command-palette"))}
-        className="mb-2 flex items-center gap-2.5 rounded-md border border-border px-2.5 py-2 text-[13px] text-ink-tertiary transition-colors duration-[120ms] hover:bg-surface-hover hover:text-ink"
+        className="mb-3 flex items-center gap-2.5 rounded-md border border-sidebar-border bg-white/5 px-2.5 py-2 text-[13px] text-sidebar-muted transition-colors duration-[120ms] hover:bg-sidebar-hover hover:text-sidebar-ink"
       >
         <Search className="h-[15px] w-[15px]" strokeWidth={2} />
         <span className="flex-1 text-left">Ara…</span>
-        <kbd className="rounded border border-border px-1.5 py-0.5 text-[10px]">⌘K</kbd>
+        <kbd className="rounded border border-sidebar-border px-1.5 py-0.5 text-[10px]">⌘K</kbd>
       </button>
+
+      <div className="px-2.5 pb-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-sidebar-muted/80">
+        Menü
+      </div>
 
       <nav className="flex flex-col gap-0.5">
         {NAV_ITEMS.map((item) => {
@@ -63,8 +65,10 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-2.5 rounded-md px-2.5 py-2 text-[13.5px] font-medium transition-colors duration-[120ms]",
-                active ? "bg-accent/12 text-accent" : "text-ink-secondary hover:bg-surface-hover hover:text-ink"
+                "relative flex items-center gap-2.5 rounded-md px-2.5 py-2 text-[13.5px] font-medium transition-colors duration-[120ms]",
+                active
+                  ? "bg-sidebar-active text-white before:absolute before:inset-y-1.5 before:left-0 before:w-[3px] before:rounded-full before:bg-sidebar-indicator"
+                  : "text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-ink"
               )}
             >
               <Icon className="h-[17px] w-[17px]" strokeWidth={2} />
@@ -75,18 +79,18 @@ export function Sidebar() {
       </nav>
 
       {user ? (
-        <div className="mt-auto flex items-center gap-2.5 border-t border-border pt-3">
-          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface-hover text-[12px] font-semibold text-ink-secondary">
+        <div className="mt-auto flex items-center gap-2.5 border-t border-sidebar-border pt-3">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sidebar-active text-[12px] font-semibold text-sidebar-ink">
             {initials(user.name)}
           </div>
           <div className="min-w-0 flex-1">
             <div className="truncate text-[12.5px] font-semibold">{user.name}</div>
-            <div className="truncate text-[11.5px] text-ink-tertiary">{user.email}</div>
+            <div className="truncate text-[11.5px] text-sidebar-muted">{user.email}</div>
           </div>
           <button
             type="button"
             onClick={() => logout.mutate()}
-            className="rounded-md p-1.5 text-ink-tertiary transition-colors hover:bg-surface-hover hover:text-ink"
+            className={cn("rounded-md p-1.5 transition-colors", SIDEBAR_ICON_BUTTON)}
             aria-label="Çıkış yap"
           >
             <LogOut className="h-[15px] w-[15px]" strokeWidth={2} />

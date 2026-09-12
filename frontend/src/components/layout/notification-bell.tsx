@@ -22,7 +22,8 @@ function timeAgo(dateStr: string): string {
   return `${Math.floor(hours / 24)}g önce`;
 }
 
-export function NotificationBell() {
+/** `className` verilirse varsayılan renk/hover sınıflarının yerine geçer. */
+export function NotificationBell({ className }: { className?: string }) {
   useNotificationRealtime();
   const { data: unreadCount } = useUnreadNotificationCount();
   const { data: notifications } = useNotifications();
@@ -34,7 +35,10 @@ export function NotificationBell() {
       <DropdownMenu.Trigger asChild>
         <button
           type="button"
-          className="relative flex h-8 w-8 items-center justify-center rounded-md text-ink-tertiary transition-colors hover:bg-surface-hover hover:text-ink"
+          className={cn(
+            "relative flex h-8 w-8 items-center justify-center rounded-md transition-colors",
+            className ?? "text-ink-tertiary hover:bg-surface-hover hover:text-ink"
+          )}
           aria-label="Bildirimler"
         >
           <Bell className="h-[15px] w-[15px]" strokeWidth={2} />

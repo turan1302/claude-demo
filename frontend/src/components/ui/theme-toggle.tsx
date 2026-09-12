@@ -2,13 +2,17 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+import { cn } from "@/lib/utils";
 
-export function ThemeToggle() {
+const subscribe = () => () => {};
+
+/** `className` verilirse varsayılan renk/hover sınıflarının yerine geçer. */
+export function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  // Sunucuda/hidrasyonda false, istemcide true — tema yalnızca istemcide
+  // bilindiği için hidrasyon uyuşmazlığını önler.
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
 
   if (!mounted) {
     return <div className="h-8 w-8" />;
@@ -20,7 +24,10 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="flex h-8 w-8 items-center justify-center rounded-md text-ink-tertiary transition-colors hover:bg-surface-hover hover:text-ink active:scale-95"
+      className={cn(
+        "flex h-8 w-8 items-center justify-center rounded-md transition-colors",
+        className ?? "text-ink-tertiary hover:bg-surface-hover hover:text-ink"
+      )}
       aria-label={isDark ? "Açık temaya geç" : "Koyu temaya geç"}
     >
       {isDark ? <Sun className="h-[15px] w-[15px]" strokeWidth={2} /> : <Moon className="h-[15px] w-[15px]" strokeWidth={2} />}

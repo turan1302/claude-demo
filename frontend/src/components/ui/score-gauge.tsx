@@ -5,7 +5,7 @@ import { useCountUp } from "@/hooks/use-count-up";
 import { scoreTone } from "@/lib/labels";
 import { EASE_SNAPPY } from "@/lib/motion";
 
-const STROKE_COLORS = { good: "#3dd68c", warn: "#f5a623", bad: "#f65656" } as const;
+const STROKE_COLORS = { good: "var(--color-good)", warn: "var(--color-warn)", bad: "var(--color-bad)" } as const;
 
 function AnimatedNumber({ value }: { value: number }) {
   return <>{useCountUp(value)}</>;

@@ -4,12 +4,12 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 rounded-md text-sm font-semibold transition-[background-color,filter,transform] duration-[120ms] ease-[var(--ease-snappy)] active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
+  "inline-flex items-center justify-center gap-2 rounded-md text-sm font-semibold transition-[background-color,color,filter] duration-[120ms] ease-[var(--ease-snappy)] disabled:pointer-events-none disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
   {
     variants: {
       variant: {
-        primary: "bg-accent text-white hover:brightness-110",
-        secondary: "bg-surface text-ink border border-border hover:bg-surface-hover",
+        primary: "bg-primary text-white shadow-card hover:bg-primary-hover",
+        secondary: "bg-surface text-ink border border-border shadow-card hover:bg-surface-hover",
         ghost: "text-ink-secondary hover:bg-surface-hover hover:text-ink",
         danger: "bg-bad text-white hover:brightness-110",
       },

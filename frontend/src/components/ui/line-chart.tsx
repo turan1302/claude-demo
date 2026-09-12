@@ -18,7 +18,7 @@ export interface LineChartPoint {
 export function LineChart({
   data,
   height = 160,
-  color = "#6e62f1",
+  color = "var(--color-accent)",
   formatValue = (value) => String(value),
 }: {
   data: LineChartPoint[];

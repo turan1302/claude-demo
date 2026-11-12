@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Açık tema (varsayılan) */
+  --color-bg: #f5f7fa;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f0f3f7;
+  --color-border: #e2e7ee;
+  --color-ink: #0f172a;
+  --color-ink-secondary: #475569;
+  --color-ink-tertiary: #64748b;
+
+  /* accent: metin/link/yarı saydam zeminler; primary: beyaz yazılı buton
+     dolgusu. Koyu temada tek bir mavi ikisinde birden yeterli kontrastı
+     sağlayamadığı için ayrı tutuluyorlar. */
+  --color-accent: #1d4ed8;
+  --color-primary: #1d4ed8;
+  --color-primary-hover: #1e40af;
+  --color-good: #15803d;
+  --color-warn: #b45309;
+  --color-bad: #b91c1c;
+  --color-tech: #4f46e5;
+
+  /* Kenar menüsü — iki temada da lacivert */
+  --color-sidebar: #0f1f3d;
+  --color-sidebar-hover: #182b4f;
+  --color-sidebar-active: #1d3563;
+  --color-sidebar-border: #1c2e52;
+  --color-sidebar-ink: #f1f5fb;
+  --color-sidebar-muted: #9fb0cc;
+  --color-sidebar-indicator: #60a5fa;
+
+  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.05);
+
+  --radius-lg: 8px;
+  --radius-md: 6px;
+  --radius-sm: 4px;
+
+  --ease-snappy: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Mobil menü paneli (components/layout/mobile-nav.tsx) */
+  --animate-drawer-in: drawer-in 220ms var(--ease-snappy);
+  --animate-drawer-out: drawer-out 160ms ease-in;
+  --animate-fade-in: fade-in 200ms ease-out;
+  --animate-fade-out: fade-out 160ms ease-in;
+
+  @keyframes drawer-in {
+    from {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes drawer-out {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+}
+
+[data-theme="dark"] {
+  --color-bg: #0b1220;
+  --color-surface: #111a2e;
+  --color-surface-hover: #17223a;
+  --color-border: #1f2b45;
+  --color-ink: #e6ebf2;
+  --color-ink-secondary: #9aa6b8;
+  --color-ink-tertiary: #7d889b;
+
+  --color-accent: #3b82f6;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-good: #3dd68c;
+  --color-warn: #f5a623;
+  --color-bad: #f65656;
+  --color-tech: #9b8cf0;
+
+  --color-sidebar: #0d1830;
+  --color-sidebar-hover: #14223d;
+  --color-sidebar-active: #1a2d52;
+  --color-sidebar-border: #1f2b45;
+}
+
+/*
+ * Tailwind v4 kendi utility'lerini `@layer utilities` içinde tanımlıyor.
+ * Bu kurallar katmansız (unlayered) yazılırsa CSS cascade katman önceliği
+ * gereği utility class'ları (örn. text-white) EZER — bu yüzden `@layer base`
+ * içine alınıyor (Tailwind'in "theme, base, components, utilities" katman
+ * sırasında base, utilities'den önce/daha düşük öncelikli gelir).
+ */
+@layer base {
+  body {
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 120ms var(--ease-snappy), color 120ms var(--ease-snappy);
+  }
+
+  a {
+    color: var(--color-accent);
+  }
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    var(--color-surface-hover) 37%,
+    var(--color-surface) 63%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
